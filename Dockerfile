@@ -42,7 +42,3 @@ RUN chmod -R g+rwX /var/log/varnish
 
 # Copy the main varnish configuration
 COPY default.vcl /etc/varnish/default.vcl
-
-# Expose HTTP
-EXPOSE 80
-
