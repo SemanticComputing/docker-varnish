@@ -133,6 +133,14 @@ sub vcl_hit {
         }
 }
 
+sub vcl_deliver {
+    if(obj.hits > 0) {
+        set resp.http.X-Cache = "HIT"
+    else {
+        set resp.http.X-Cache = "MISS"
+    }
+}
+
 # SITE SPECIFIC
 # Any site-specific configuration can be provided in /etc/varnish/site.vcl
 # Or if needed, this file (/etc/varnish/default.vcl) could be overridden as well.
@@ -141,3 +149,10 @@ include "site.vcl";
 # TAIL
 
 # If something needs to be added after the site-specific configuration, add it here
+
+sub vcl_recv {}
+sub vcl_backend_response {}
+sub vcl_backend_error {}
+sub vcl_synth {}
+sub vcl_hit {}
+sub vcl_deliver {}
