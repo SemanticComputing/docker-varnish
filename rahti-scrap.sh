@@ -15,8 +15,5 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
-# Start the build
-BUILDCONFIG=$(oc get BuildConfig -l "app=$APP_NAME,environment=$ENVIRONMENT" -o name)
-if [ $? == 0 ]; then
-    oc start-build $BUILDCONFIG
-fi
+# Remove resources
+oc delete all -l "app=$APP_NAME,environment=$ENVIRONMENT"

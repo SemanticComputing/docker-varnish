@@ -1,24 +1,6 @@
-SERVER="https://rahti.csc.fi:8443"
-PROJECT_NAME="seco"
-TEMPLATE_NAME="seco-image"
+#!/bin/bash
 
-APP_NAME="varnish"
-ENVIRONMENT="production"
-GIT_URL="git@version.aalto.fi:seco/docker-varnish.git"
-GIT_REF=""
-GIT_DIR=""
-GIT_SECRET="seco-git"
-#FROM="apache-varnish"
-#IP="172.30.10.33"
-#CONTAINER_PORT="80"
-#TARGET_PORT="80"
-#WEBHOOK_SECRET="JOacMuKpbvKh"
-#IP="172.30.10.33"
-#PVC_NAME="volume-name"
-#PVC_TARGET="/m/"
-#CORES="1"
-#MEM="2g"
-
+. rahti-params.sh
 
 # Login if needed
 CURRENT_SERVER=$(oc status | head -n 1 | awk -F' ' '{print $NF}')
@@ -59,38 +41,45 @@ if [ "$PVC_NAME" != "" ]; then
     fi;
 fi;
 
+# Build OC_PROCESS_CMD
+OC_PROCESS_CMD="oc process -o yaml"
+append_param() {
+    if [ ! -z $2 ]; then
+        OC_PROCESS_CMD="$OC_PROCESS_CMD -p $1=$2"
+    fi
+}
+OC_PROCESS_CMD="$OC_PROCESS_CMD $TEMPLATE_NAME"
+append_param "APP_NAME" "$APP_NAME"
+append_param "ENVIRONMENT" "$ENVIRONMENT"
+append_param "GIT_URL" "$GIT_URL"
+append_param "GIT_REF" "$GIT_REF"
+append_param "GIT_DIR" "$GIT_DIR"
+append_param "GIT_SECRET" "$GIT_SECRET"
+append_param "FROM" "$FROM"
+append_param "IP" "$IP"
+append_param "PVC_NAME" "$PVC_NAME"
+append_param "PVC_TARGET" "$PVC_TARGET"
+append_param "CORES" "$CORES"
+append_param "MEM" "$MEM"
+append_param "ENV1_NAME" "$ENV1_NAME"
+append_param "ENV1_VALUE" "$ENV1_VALUE"
+append_param "ENV2_NAME" "$ENV2_NAME"
+append_param "ENV2_VALUE" "$ENV2_VALUE"
+append_param "ENV3_NAME" "$ENV3_NAME"
+append_param "ENV3_VALUE" "$ENV3_VALUE"
+append_param "ENV4_NAME" "$ENV4_NAME"
+append_param "ENV4_VALUE" "$ENV4_VALUE"
+append_param "ENV5_NAME" "$ENV5_NAME"
+append_param "ENV5_VALUE" "$ENV5_VALUE"
+append_param "ENV6_NAME" "$ENV6_NAME"
+append_param "ENV6_VALUE" "$ENV6_VALUE"
+append_param "ENV7_NAME" "$ENV7_NAME"
+append_param "ENV7_VALUE" "$ENV7_VALUE"
+append_param "ENV8_NAME" "$ENV8_NAME"
+append_param "ENV8_VALUE" "$ENV8_VALUE"
 # Generate resources yaml from the template
-YAML=$(oc process -o yaml $TEMPLATE_NAME \
-    -p "APP_NAME=$APP_NAME" \
-    -p "ENVIRONMENT=$ENVIRONMENT" \
-    -p "GIT_URL=$GIT_URL" \
-    -p "GIT_REF=$GIT_REF" \
-    -p "GIT_DIR=$GIT_DIR" \
-    -p "GIT_SECRET=$GIT_SECRET"
-    #-p "FROM=$FROM" \
-    #-p "IP=$IP" \
-    #-p "PVC_NAME=$PVC_NAME" \
-    #-p "PVC_TARGET=$PVC_TARGET" \
-    # CORES, MEM not added to the templates yet
-    #-p "CORES=$CORES" \
-    #-p "MEM=$MEM" \
-    #-p "ENV1_NAME=$ENV1_NAME" \
-    #-p "ENV1_VALUE=$ENV1_VALUE" \
-    #-p "ENV2_NAME=$ENV2_NAME" \
-    #-p "ENV2_VALUE=$ENV2_VALUE" \
-    #-p "ENV3_NAME=$ENV3_NAME" \
-    #-p "ENV3_VALUE=$ENV3_VALUE" \
-    #-p "ENV4_NAME=$ENV4_NAME" \
-    #-p "ENV4_VALUE=$ENV4_VALUE" \
-    #-p "ENV5_NAME=$ENV5_NAME" \
-    #-p "ENV5_VALUE=$ENV5_VALUE" \
-    #-p "ENV6_NAME=$ENV6_NAME" \
-    #-p "ENV6_VALUE=$ENV6_VALUE" \
-    #-p "ENV7_NAME=$ENV7_NAME" \
-    #-p "ENV7_VALUE=$ENV7_VALUE" \
-    #-p "ENV8_NAME=$ENV8_NAME" \
-    #-p "ENV8_VALUE=$ENV8_VALUE"
-    )
+echo "$OC_PROCESS_CMD"
+YAML=$($OC_PROCESS_CMD)
 
 echo ""
 echo "Resources to be created:"
