@@ -1,4 +1,4 @@
-API_URL="https://rahti.csc.fi:8443"
+SERVER="https://rahti.csc.fi:8443"
 PROJECT_NAME="seco"
 TEMPLATE_NAME="seco-image"
 
@@ -20,20 +20,28 @@ GIT_SECRET="seco-git"
 #MEM="2g"
 
 
-oc login $API_URL
-oc project $PROJECT_NAME
+# Login if needed
+CURRENT_SERVER=$(oc status | head -n 1 | awk -F' ' '{print $NF}')
+oc whoami
+if [ $? != 0 ] || [ $CURRENT_SERVER != $SERVER ]; then
+    oc login $SERVER
+fi
 
+# Switch project
+oc project $PROJECT_NAME
 if [ $? != 0 ]; then
     exit 1
 fi
 
+# Check template exists
 oc get template "$TEMPLATE_NAME"
 if [ $? != 0 ]; then
     echo "Template $TEMPLATE_NAME missing from the OpenShift project. Upload the OpenShift templates first"
     exit 1
 fi
 
-if [ "$IMAGE_NAME" != "" ]; then
+# Check base image exists
+if [ "$FROM" != "" ]; then
     oc get imagestreamtags "$FROM:latest"
     if [ $? != 0 ]; then
         echo "ImageStreamTag $FROM:latest missing from the OpenShift internal registry. Please deploy/build it first"
@@ -43,6 +51,7 @@ if [ "$IMAGE_NAME" != "" ]; then
     fi
 fi;
 
+# Check PersistentVolumeCLaim exists
 if [ "$PVC_NAME" != "" ]; then
     oc get template "$PVC_NAME"
     if [ $? != 0 ]; then
@@ -50,14 +59,14 @@ if [ "$PVC_NAME" != "" ]; then
     fi;
 fi;
 
-
-oc process $TEMPLATE_NAME \
+# Generate resources yaml from the template
+YAML=$(oc process -o yaml $TEMPLATE_NAME \
     -p "APP_NAME=$APP_NAME" \
     -p "ENVIRONMENT=$ENVIRONMENT" \
     -p "GIT_URL=$GIT_URL" \
     -p "GIT_REF=$GIT_REF" \
     -p "GIT_DIR=$GIT_DIR" \
-    -p "GIT_SECRET=$GIT_SECRET" \
+    -p "GIT_SECRET=$GIT_SECRET"
     #-p "FROM=$FROM" \
     #-p "IP=$IP" \
     #-p "PVC_NAME=$PVC_NAME" \
@@ -81,3 +90,19 @@ oc process $TEMPLATE_NAME \
     #-p "ENV7_VALUE=$ENV7_VALUE" \
     #-p "ENV8_NAME=$ENV8_NAME" \
     #-p "ENV8_VALUE=$ENV8_VALUE"
+    )
+
+echo ""
+echo "Resources to be created:"
+echo "$YAML"
+echo ""
+
+read -p "Create the resources (y/n)?" choice
+case "$choice" in 
+    y|Y ) ;;
+    * ) exit 1;;
+esac
+echo ""
+
+# Create the resources
+echo "$YAML" | oc create -f -
