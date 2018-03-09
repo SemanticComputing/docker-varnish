@@ -106,6 +106,7 @@ echo ""
 
 # Create the resources
 echo "$YAML" | oc create -f -
+if [ $? != 0 ]; then exit 1; fi;
 
 # Start the build
 BUILDCONFIG=$(oc get BuildConfig -l "app=varnish,environment=production" -o name)
