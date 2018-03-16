@@ -16,6 +16,19 @@ You need to start varnish in you downstream image by calling e.g.
 varnishd -f "$FILE_DEFAULT_VCL" -s "malloc,1g"
 ```
 
+## Pulling
+
+rahti-scripts is a submodule therefore you might want to use
+
+```
+git clone --recursive
+```
+and
+
+```
+git pull --recurse-submodules
+```
+
 
 ## Building
 
