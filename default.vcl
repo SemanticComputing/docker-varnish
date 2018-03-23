@@ -12,6 +12,11 @@ import vsthrottle;
 import std;
 import urlcode;
 
+backend default {
+	.host = "localhost";
+	.port = "8080";
+}
+
 # HEAD
 
 sub vcl_recv {
