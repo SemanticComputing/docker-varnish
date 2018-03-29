@@ -76,7 +76,7 @@ sub vcl_hash {
     }
 }
 EOF
-elif [ "$VARNISH_IGNORE_COOKIE" == "" ]; then
+elif [ "$VARNISH_IGNORE_COOKIE" != "" ]; then
 cat -  <<EOF
 sub vcl_recv {
     if (req.http.Cookie) {
@@ -98,8 +98,10 @@ sub vcl_recv {
 }
 EOF
 
+if [ "$VARNISH_DEFAULT_TTL" != "" ]; then
 cat -  <<EOF
 sub vcl_backend_response {
 	set beresp.ttl = $VARNISH_DEFAULT_TTL;
 }
 EOF
+fi
