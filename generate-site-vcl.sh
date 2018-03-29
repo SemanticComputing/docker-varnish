@@ -98,3 +98,8 @@ sub vcl_recv {
 }
 EOF
 
+cat -  <<EOF
+sub vcl_backend_response {
+	set beresp.ttl = $VARNISH_DEFAULT_TTL;
+}
+EOF
