@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Print commands
+set -x
+
+if [ ! -e "$FILE_SITE_VCL" ] || [ "$(cat \"$FILE_SITE_VCL\")" == "" ]; then    
+    bash "$FILE_GENERATE_SITE_VCL_SH" > "$FILE_SITE_VCL"
+fi
+
+# Start apache
+varnishd -f "$FILE_DEFAULT_VCL" -s "malloc,$MEM_VARNISH"
+
+# Write varnish log to /var/log/varnish/varnish.log
+varnishlog -Aw "$FILE_LOG_VARNISH"

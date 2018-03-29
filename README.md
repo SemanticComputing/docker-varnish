@@ -1,7 +1,7 @@
 # varnish
 
 ## Notes
-Following are defined in this image:
+Following paths
 
 ```
 ENV FILE_DEFAULT_VCL "/etc/varnish/default.vcl"
@@ -10,15 +10,30 @@ ENV PATH_LOG_VARNISH "/var/log/varnish"
 ENV FILE_LOG_VARNISH "$PATH_LOG_VARNISH/varnish.log"
 ENV PATH_VAR_VARNISH "/var/lib/varnish"
 ```
-`FILE_DEFAULT_VCL` contains some common configuration and includes `FILE_SITE_VCL` by default.
-You need to start varnish in you downstream image by calling e.g.
+
+`FILE_DEFAULT_VCL` contains some common configuration and by default includes `FILE_SITE_VCL`, which is meant for app-specific configuration.
+
+You can exec varnish by calling
 ```
-varnishd -f "$FILE_DEFAULT_VCL" -s "malloc,1g"
+$EXEC_VARNISH
 ```
+, which will generate `FILE_SITE_VCL` if it does not exist, start varnish and forward varnishlog to stdout. Generation of `FILE_SITE_VCL` can be controlled using the following environment variables:
+```
+VARNISH_CACHE_COOKIES # Cache requests with cookies and include the cookie in hash
+VARNISH_IGNORE_COOKIES # Cache requests with cookies, but ignore the cookie value in hash
+VARNISH_CACHE_AUTH # Cache requests with Authorization and include the Authorization in hash
+VARNISH_IGNORE_AUTH # Cache requests with Authorization, but ignore the Authorization in hash
+VARNISH_DEFAULT_TTL # Time for which objects are cached
+VARNISH_BACKEND_IP # Backend IP address
+VARNISH_BACKEND_PORT # Backend port
+```
+`Remember that CACHE_AUTH will cause content to be accessible for TTL even if the Authorization is invalidated on the backend. IGNORE_AUTH will give access to content with invalid Authorization`
+`Do not set these two if you don't know what you are doing`
+Default behaviour is to not cache anything with Cookies or Authorization.
 
 ## Pulling
 
-rahti-scripts is a submodule therefore you might want to use
+rahti-scripts is a submodule therefore you might want to use e.g.
 
 ```
 git clone --recursive
