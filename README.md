@@ -1,14 +1,12 @@
 # varnish
 
 ## Notes
-Following paths
-
+Following variables are defined at build time
 ```
-ENV FILE_DEFAULT_VCL "/etc/varnish/default.vcl"
-ENV FILE_SITE_VCL "/etc/varnish/site.vcl"
-ENV PATH_LOG_VARNISH "/var/log/varnish"
-ENV FILE_LOG_VARNISH "$PATH_LOG_VARNISH/varnish.log"
-ENV PATH_VAR_VARNISH "/var/lib/varnish"
+FILE_DEFAULT_VCL # Common configuration
+FILE_SITE_VCL # App specific configuration that is included by FILE_DEFAULT_VCL by default
+PATH_LOG_VARNISH # Log directory
+FILE_LOG_VARNISH # Log file. Nothing is written here by default and logging is done to stdout instead. However the file is created and can be used e.g. in a downstream image '$EXEC_VARNISH > "$FILE_LOG_VARNISH" &'
 ```
 
 `FILE_DEFAULT_VCL` contains some common configuration and by default includes `FILE_SITE_VCL`, which is meant for app-specific configuration.
