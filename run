@@ -11,7 +11,7 @@ fi
 touch "$FILE_LOG_VARNISH"
 
 # Start varnish
-varnishd -f "$FILE_DEFAULT_VCL" -s "malloc,$MEM_VARNISH"
+varnishd -f "$FILE_DEFAULT_VCL" -s "malloc,$VARNISH_MEM"
 
 # Write varnish log to /var/log/varnish/varnish.log
 varnishlog
