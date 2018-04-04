@@ -3,7 +3,7 @@
 # Print commands
 set -x
 
-if [ ! -e "$FILE_SITE_VCL" ] || [ "$(cat \"$FILE_SITE_VCL\")" == "" ]; then    
+if [ ! -e "$FILE_SITE_VCL" ] || [ "$(cat "$FILE_SITE_VCL")" == "" ]; then    
     bash "$FILE_GENERATE_SITE_VCL_SH" > "$FILE_SITE_VCL"
 fi
 
