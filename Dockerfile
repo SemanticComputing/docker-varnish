@@ -38,8 +38,8 @@ ENV PATH_LOG_VARNISH "/var/log/varnish"
 ENV FILE_LOG_VARNISH "$PATH_LOG_VARNISH/varnish.log"
 ENV PATH_VAR_VARNISH "/var/lib/varnish"
 ENV FILE_GENERATE_SITE_VCL_SH "/etc/varnish/generate-site-vcl.sh"
-ENV FILE_RUN_VARNISH_SH "/run-varnish.sh"
-ENV EXEC_VARNISH "exec $FILE_RUN_VARNISH_SH"
+ENV RUN_VARNISH "/run-varnish.sh"
+ENV EXEC_VARNISH "exec $RUN_VARNISH"
 
 # RUN-TIME ENVIRONMENT VARIABLES
 ENV VARNISH_CACHE_COOKIE ""
@@ -65,6 +65,6 @@ RUN mkdir -p "$(dirname '$FILE_DEFAULT_VCL')"; touch "$FILE_SITE_VCL"; chmod g=u
 RUN mkdir -p "$(dirname '$FILE_SITE_VCL')"; touch "$FILE_SITE_VCL"; chmod g=u "$FILE_SITE_VCL"
 RUN mkdir -p "$(dirname '$FILE_LOG_VARNISH')"; touch "$FILE_LOG_VARNISH"; chmod g=u "$FILE_LOG_VARNISH"
 
-COPY run "$FILE_RUN_VARNISH_SH"
+COPY run "$RUN_VARNISH"
 
 ENTRYPOINT [ "/run-varnish.sh" ]
