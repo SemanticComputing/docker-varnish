@@ -7,11 +7,8 @@ if [ ! -s "$FILE_SITE_VCL" ]; then
     bash "$FILE_GENERATE_SITE_VCL_SH" > "$FILE_SITE_VCL"
 fi
 
-# Make sure log file exists
-touch "$FILE_LOG_VARNISH"
-
 # Start varnish
 varnishd -f "$FILE_DEFAULT_VCL" -s "malloc,$VARNISH_MEM"
 
 # Write varnish log to /var/log/varnish/varnish.log
-varnishlog
+exec varnishlog
