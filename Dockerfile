@@ -38,9 +38,6 @@ RUN apt-get remove
 # BUILD-TIME ENVIRONMENT VARIABLES
 ENV FILE_DEFAULT_VCL "/etc/varnish/default.vcl"
 ENV FILE_SITE_VCL "/etc/varnish/site.vcl"
-ENV PATH_LOG_VARNISH "/var/log/varnish"
-ENV FILE_LOG_VARNISH "$PATH_LOG_VARNISH/varnish.log"
-ENV FILE_ERR_VARNISH "$PATH_LOG_VARNISH/varnish.err"
 ENV PATH_VAR_VARNISH "/var/lib/varnish"
 ENV FILE_GENERATE_SITE_VCL_SH "/etc/varnish/generate-site-vcl.sh"
 ENV RUN_VARNISH "/run-varnish.sh"
@@ -64,12 +61,9 @@ COPY generate-site-vcl.sh "$FILE_GENERATE_SITE_VCL_SH"
 RUN setcap CAP_NET_BIND_SERVICE=+eip /usr/sbin/varnishd
 
 # PERMISSIONS: FILES and FOLDERS
-RUN D="$PATH_LOG_VARNISH"  && mkdir -p "$D" && chgrp -R root "$D" && chmod g=u -R "$D" && \
-    D="$PATH_VAR_VARNISH"  && mkdir -p "$D" && chgrp -R root "$D" && chmod g=u -R "$D"
+RUN D="$PATH_VAR_VARNISH"  && mkdir -p "$D" && chgrp -R root "$D" && chmod g=u -R "$D"
 RUN F="$FILE_SITE_VCL"     && D="$(dirname "$F")" && mkdir -p "$D" && chmod g=u "$D" && touch "$F"  && chmod g=u "$F" && \
-    F="$FILE_DEFAULT_VCL"  && D="$(dirname "$F")" && mkdir -p "$D" && chmod g=u "$D" && touch "$F"  && chmod g=u "$F" && \
-    F="$FILE_LOG_VARNISH"  && D="$(dirname "$F")" && mkdir -p "$D" && chmod g=u "$D" && touch "$F"  && chmod g=u "$F" && \
-    F="$FILE_ERR_VARNISH"  && D="$(dirname "$F")" && mkdir -p "$D" && chmod g=u "$D" && touch "$F"  && chmod g=u "$F"
+    F="$FILE_DEFAULT_VCL"  && D="$(dirname "$F")" && mkdir -p "$D" && chmod g=u "$D" && touch "$F"  && chmod g=u "$F"
 
 COPY run "$RUN_VARNISH"
 RUN chmod ug+x "$RUN_VARNISH"
