@@ -2,22 +2,25 @@
 FROM debian:latest
 
 # INSTALL
-RUN apt-get update
-RUN apt-get install -y varnish varnish-modules
-RUN apt-get install -y git
-RUN apt-get install -y gettext-base
-RUN apt-get install -y libcap2-bin
+RUN apt-get update && \
+    apt-get install -y \
+    varnish \
+    varnish-modules \
+    git \
+    gettext-base \
+    libcap2-bin \
+    vim
 
 # Compile and install varnish vmod 'urlcode'.
 RUN apt-get install -y \
     wget \
     dpkg-dev \
-		libtool \
-		m4 \
-		automake \
-		pkg-config \
-		docutils-common \
-		libvarnishapi-dev
+    libtool \
+    m4 \
+    automake \
+    pkg-config \
+    docutils-common \
+    libvarnishapi-dev
 RUN cd /tmp \
 		&& mkdir urlcode \
 		&& cd urlcode \
@@ -29,6 +32,7 @@ RUN cd /tmp \
 		&& make \
 		&& make install \
 		&& make check
+RUN apt-get remove
 
 
 # BUILD-TIME ENVIRONMENT VARIABLES
@@ -60,12 +64,14 @@ COPY generate-site-vcl.sh "$FILE_GENERATE_SITE_VCL_SH"
 RUN setcap CAP_NET_BIND_SERVICE=+eip /usr/sbin/varnishd
 
 # PERMISSIONS: FILES and FOLDERS
-RUN mkdir -p "$PATH_LOG_VARNISH"; chgrp -R root "$PATH_LOG_VARNISH"; chmod g=u -R "$PATH_LOG_VARNISH"
-RUN mkdir -p "$PATH_VAR_VARNISH"; chgrp -R root "$PATH_VAR_VARNISH"; chmod g=u -R "$PATH_VAR_VARNISH"
-RUN mkdir -p "$(dirname '$FILE_DEFAULT_VCL')"; touch "$FILE_SITE_VCL"; chmod g=u "$FILE_SITE_VCL"
-RUN mkdir -p "$(dirname '$FILE_SITE_VCL')"; touch "$FILE_SITE_VCL"; chmod g=u "$FILE_SITE_VCL"
-RUN mkdir -p "$(dirname '$FILE_LOG_VARNISH')"; touch "$FILE_LOG_VARNISH"; chmod g=u "$FILE_LOG_VARNISH"
+RUN D="$PATH_LOG_VARNISH"  && mkdir -p "$D" && chgrp -R root "$D" && chmod g=u -R "$D" && \
+    D="$PATH_VAR_VARNISH"  && mkdir -p "$D" && chgrp -R root "$D" && chmod g=u -R "$D"
+RUN F="$FILE_SITE_VCL"     && D="$(dirname "$F")" && mkdir -p "$D" && chmod g=u "$D" && touch "$F"  && chmod g=u "$F" && \
+    F="$FILE_DEFAULT_VCL"  && D="$(dirname "$F")" && mkdir -p "$D" && chmod g=u "$D" && touch "$F"  && chmod g=u "$F" && \
+    F="$FILE_LOG_VARNISH"  && D="$(dirname "$F")" && mkdir -p "$D" && chmod g=u "$D" && touch "$F"  && chmod g=u "$F" && \
+    F="$FILE_ERR_VARNISH"  && D="$(dirname "$F")" && mkdir -p "$D" && chmod g=u "$D" && touch "$F"  && chmod g=u "$F"
 
 COPY run "$RUN_VARNISH"
+RUN chmod ug+x "$RUN_VARNISH"
 
 ENTRYPOINT [ "/run-varnish.sh" ]
