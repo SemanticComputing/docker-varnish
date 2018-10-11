@@ -9,7 +9,9 @@ RUN apt-get update && \
     git \
     gettext-base \
     libcap2-bin \
-    vim
+    vim \
+    procps \
+    htop
 
 # Compile and install varnish vmod 'urlcode'.
 RUN apt-get install -y \
