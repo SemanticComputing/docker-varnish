@@ -24,18 +24,21 @@ RUN apt-get install -y \
     docutils-common \
     libvarnishapi-dev
 RUN cd /tmp \
-		&& mkdir urlcode \
-		&& cd urlcode \
-		&& wget https://github.com/fastly/libvmod-urlcode/archive/master.tar.gz \
-		&& tar -xf master.tar.gz \
-		&& cd libvmod-urlcode-master \
+        && git clone https://github.com/fastly/libvmod-urlcode.git \
+		&& cd libvmod-urlcode \
 		&& sh autogen.sh \
 		&& ./configure \
 		&& make \
 		&& make install \
 		&& make check
-RUN apt-get remove
-
+RUN cd /tmp \
+        && git clone -b varnish51 https://github.com/xcir/libvmod-parseform.git \
+		&& cd libvmod-parseform \
+		&& sh autogen.sh \
+		&& ./configure \
+		&& make \
+		&& make install \
+		&& make check
 
 # BUILD-TIME ENVIRONMENT VARIABLES
 ENV FILE_DEFAULT_VCL "/etc/varnish/default.vcl"
