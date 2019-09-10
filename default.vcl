@@ -74,7 +74,7 @@ sub vcl_backend_error {
                             <h1>Error "} + beresp.status + " " + beresp.reason + {"</h1>
                             <p>It seems our front-end could not connect to the back-end server ("} + bereq.backend + {") which hosts the service you were trying to access (<a href="http://"} + bereq.http.host + "" + bereq.url + {"">http://"} + bereq.http.host + bereq.url + {"</a>).</p>
                             <p>This means that the back-end or our service infrastructure may be experiencing problems.</p>
-                            <p>Please try again in a couple of minutes and if the problem persists, contact <a href="mailto:seco-help@list.aalto.fi">seco-help@list.aalto.fi</a> in order to notify us of the situation.</p>
+                            <p>Please try again in a couple of minutes.</p>
                         </body>
                     </html>
             "});

@@ -1,34 +1,5 @@
 # varnish
 
-## Notes
-Following variables are defined at build time
-```
-FILE_DEFAULT_VCL # Common configuration
-FILE_SITE_VCL # App specific configuration that is included by FILE_DEFAULT_VCL by default
-PATH_LOG_VARNISH # Log directory
-FILE_LOG_VARNISH # Log file. Nothing is written here by default and logging is done to stdout instead. However the file is created and can be used e.g. in a downstream image '$EXEC_VARNISH > "$FILE_LOG_VARNISH" &'
-```
-
-`FILE_DEFAULT_VCL` contains some common configuration and by default includes `FILE_SITE_VCL`, which is meant for app-specific configuration.
-
-You can exec varnish by calling
-```
-$EXEC_VARNISH
-```
-, which will generate `FILE_SITE_VCL` if it does not exist, start varnish and forward varnishlog to stdout. Generation of `FILE_SITE_VCL` can be controlled using the following environment variables:
-```
-VARNISH_CACHE_COOKIES # Cache requests with cookies and include the cookie in hash
-VARNISH_IGNORE_COOKIES # Cache requests with cookies, but ignore the cookie value in hash
-VARNISH_CACHE_AUTH # Cache requests with Authorization and include the Authorization in hash
-VARNISH_IGNORE_AUTH # Cache requests with Authorization, but ignore the Authorization in hash
-VARNISH_DEFAULT_TTL # Time for which objects are cached
-VARNISH_BACKEND_IP # Backend IP address
-VARNISH_BACKEND_PORT # Backend port
-```
-`Remember that CACHE_AUTH will cause content to be accessible for TTL even if the Authorization is invalidated on the backend. IGNORE_AUTH will give access to content with invalid Authorization`
-`Do not set these two if you don't know what you are doing`
-Default behaviour is to not cache anything with Cookies or Authorization.
-
 ## Pulling
 
 rahti-scripts is a submodule therefore you might want to use e.g.
@@ -46,57 +17,28 @@ git pull --recurse-submodules
 ## Building
 
 ```
-./docker-build.sh [-c]
-```
-* -c
-    * no cache
-
-
-## Running in docker
-
-```
-./docker-run.sh
-```
-The service is available at localhost:8080 by default.
-
-
-## Debugging in docker
-
-```
-docker exec -it <container-name> bash`
+docker build -t varnish .
 ```
 
-Opens bash inside the running container.
+## Running
 
-
-## Running on Rahti
-
-### Initialize OpenShift resources
-
+In order to run the varnish with a custom vcl config mounted, you can for example run something along the lines:
 ```
-./rahti-init.sh
-```
-Can be done via the web intarface as well. See rahti-params.sh for the template and parameters to use.
-
-### Rebuild the service
-
-```
-./rahti-rebuild.sh
-```
-Can be done via the web interface as well. Navigate to the BuildConfig in question and click "Start Build"
-
-### Remove the OpenShift resources
-
-```
-./rahti-scrap.sh
+docker run -it --rm -u "$(id -u)" -p 8080:8080 -v '/path/to/default.vcl:/etc/varnish/default.vcl' varnish
 ```
 
-### Webhooks
+## Notes
 
-The template also generates WebHook for triggering the build followed by redeploy.
-You can see the exact webhook URL with e.g. following commands
+If the `default.vcl` config file is not provided, the container generates some default configuration - see the included `default.vcl` and `generate-site-vcl.sh` for details. In this case the config generation can be controlled by environment variables:
 ```
-oc describe bc <ENVIRONMENT>-<APP_NAME> | grep -A 1 "Webhook"
-oc describe bc -l "app=<APP_NAME>,environment=<ENVIRONMENT>"
+VARNISH_CACHE_COOKIES # Cache requests with cookies and include the cookie in hash
+VARNISH_IGNORE_COOKIES # Cache requests with cookies, but ignore the cookie value in hash
+VARNISH_CACHE_AUTH # Cache requests with Authorization and include the Authorization in hash
+VARNISH_IGNORE_AUTH # Cache requests with Authorization, but ignore the Authorization in hash
+VARNISH_DEFAULT_TTL # Time for which objects are cached
+VARNISH_BACKEND_IP # Backend IP address
+VARNISH_BACKEND_PORT # Backend port
 ```
-or via the OpenShift web console by navigating to the BuildConfig in question.
+
+* If set, CACHE_AUTH will cause content to be accessible for TTL even if the Authorization is invalidated on the backend. IGNORE_AUTH may give access to content with invalid Authorization
+* By default, requests containing Authorization are not cached.
