@@ -1,5 +1,5 @@
 # Only debian seems to provide varnish 5
-FROM debian:latest
+FROM debian:9
 
 # INSTALL
 RUN apt-get update && \
