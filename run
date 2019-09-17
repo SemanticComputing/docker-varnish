@@ -8,7 +8,7 @@ if [ ! -s "$FILE_SITE_VCL" ]; then
 fi
 
 # Start varnish
-varnishd -f "$FILE_DEFAULT_VCL" -s "malloc,$VARNISH_MEM"
+varnishd -f "$FILE_DEFAULT_VCL" -s "malloc,$VARNISH_MEM" -p "vsl_mask=${VARNISH_VSL_MASK_HASH:+"+Hash"}"
 
 # Write varnish log to /var/log/varnish/varnish.log
 exec varnishlog
