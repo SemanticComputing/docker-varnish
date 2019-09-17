@@ -6,6 +6,7 @@ RUN apt-get update && \
     apt-get install -y \
     varnish \
     varnish-modules \
+    libvarnishapi-dev \
     git \
     gettext-base \
     libcap2-bin \
@@ -40,6 +41,16 @@ RUN cd /tmp \
 		&& make install \
 		&& make check
 
+RUN cd /tmp \
+        && git clone https://github.com/varnish/varnish-modules.git \
+		&& cd varnish-modules \
+		&& ./bootstrap \
+		&& ./configure \
+		&& make \
+		&& make check \
+		&& make install
+
+
 # BUILD-TIME ENVIRONMENT VARIABLES
 ENV FILE_DEFAULT_VCL "/etc/varnish/default.vcl"
 ENV FILE_SITE_VCL "/etc/varnish/site.vcl"
@@ -57,6 +68,7 @@ ENV VARNISH_DEFAULT_TTL ""
 ENV VARNISH_BACKEND_IP ""
 ENV VARNISH_BACKEND_PORT ""
 ENV VARNISH_MEM "1G"
+ENV VARNISH_VSL_MASK_HASH ""
 
 # Copy files
 COPY default.vcl "$FILE_DEFAULT_VCL"
