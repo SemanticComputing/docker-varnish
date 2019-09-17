@@ -16,6 +16,7 @@ git pull --recurse-submodules
 
 ## Building
 
+Run something along these lines:
 ```
 docker build -t varnish .
 ```
@@ -25,6 +26,16 @@ docker build -t varnish .
 In order to run the varnish with a custom vcl config mounted, you can for example run something along the lines:
 ```
 docker run -it --rm -u "$(id -u)" -p 8080:8080 -v '/path/to/default.vcl:/etc/varnish/default.vcl' varnish
+```
+
+## Configuration
+
+Below are listed environment variables (and their default values) for configuring the container.
+
+```
+FILE_DEFAULT_VCL="/etc/varnish/default.vcl" # Path to the varnish configuration
+VARNISH_MEM="1G" # Memory for varnish
+VARNISH_VSL_MASK_HASH="" # If nonempty, log hashes - run varnishd with -p vsl_mask=+Hash
 ```
 
 ## Notes
@@ -39,6 +50,7 @@ VARNISH_DEFAULT_TTL # Time for which objects are cached
 VARNISH_BACKEND_IP # Backend IP address
 VARNISH_BACKEND_PORT # Backend port
 ```
+These environment variables do not have effect if you provide your own default.vcl
 
 * If set, CACHE_AUTH will cause content to be accessible for TTL even if the Authorization is invalidated on the backend. IGNORE_AUTH may give access to content with invalid Authorization
 * By default, requests containing Authorization are not cached.
