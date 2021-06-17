@@ -1,19 +1,5 @@
 # varnish
 
-## Pulling
-
-rahti-scripts is a submodule therefore you might want to use e.g.
-
-```
-git clone --recursive
-```
-and
-
-```
-git pull --recurse-submodules
-```
-
-
 ## Building
 
 Run something along these lines:
