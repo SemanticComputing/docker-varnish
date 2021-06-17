@@ -16,12 +16,13 @@ import urlcode;
 
 sub vcl_recv {
 
+    # Varnish seems to do this automatically
     # Add us to X-Forwarded-For. X-Forwarded-For=(client, proxy1, proxy2, ...)
-    if (req.http.X-Forwarded-For) {
-        set req.http.X-Forwarded-For = req.http.X-Forwarded-For + ", " + client.ip;
-    } else {
-        set req.http.X-Forwarded-For = client.ip;
-    }
+    #if (req.http.X-Forwarded-For) {
+    #    set req.http.X-Forwarded-For = req.http.X-Forwarded-For + ", " + client.ip;
+    #} else {
+    #    set req.http.X-Forwarded-For = client.ip;
+    #}
 
     # Google Analytics cookies don't inhibit caching
     if (req.http.Cookie) {
