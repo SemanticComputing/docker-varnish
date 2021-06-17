@@ -42,7 +42,7 @@ RUN cd /tmp \
 		&& make check
 
 RUN cd /tmp \
-        && git clone https://github.com/varnish/varnish-modules.git \
+        && git clone -b 0.15.0  https://github.com/varnish/varnish-modules.git \
 		&& cd varnish-modules \
 		&& ./bootstrap \
 		&& ./configure \
