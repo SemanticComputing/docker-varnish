@@ -5,13 +5,8 @@ RUN apt-get update && \
     apt-get install -y \
     varnish \
     varnish-modules \
-    libvarnishapi-dev \
-    git \
     gettext-base \
-    libcap2-bin \
-    vim \
-    procps \
-    htop
+    libcap2-bin
 
 # BUILD-TIME ENVIRONMENT VARIABLES
 ENV FILE_DEFAULT_VCL "/etc/varnish/default.vcl"
