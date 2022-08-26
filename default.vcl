@@ -10,11 +10,15 @@ vcl 4.0;
 
 import vsthrottle;
 import std;
-import urlcode;
+#import urlcode;
 
 # HEAD
 
 sub vcl_recv {
+
+    if (req.restarts > 0) { # see https://varnish-cache.org/docs/6.2/whats-new/upgrading-6.2.html
+        set req.hash_always_miss = true;
+    }
 
     # Varnish seems to do this automatically
     # Add us to X-Forwarded-For. X-Forwarded-For=(client, proxy1, proxy2, ...)
@@ -129,7 +133,8 @@ sub vcl_hit {
                 # Ignore requests via proxy caches,  IE users and badly behaved crawlers
                 # like msnbot that send no-cache with every request.
                 if (! (req.http.Via || req.http.User-Agent ~ "bot|MSIE")) {
-                        return (miss);
+                        #return (miss);
+                        return (restart); # see https://varnish-cache.org/docs/6.2/whats-new/upgrading-6.2.html
                 } 
         }
 }

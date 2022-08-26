@@ -1,5 +1,4 @@
-# Only debian seems to provide varnish 5
-FROM debian:9
+FROM debian:11
 
 # INSTALL
 RUN apt-get update && \
@@ -13,43 +12,6 @@ RUN apt-get update && \
     vim \
     procps \
     htop
-
-# Compile and install varnish vmod 'urlcode'.
-RUN apt-get install -y \
-    wget \
-    dpkg-dev \
-    libtool \
-    m4 \
-    automake \
-    pkg-config \
-    docutils-common \
-    libvarnishapi-dev
-RUN cd /tmp \
-        && git clone https://github.com/fastly/libvmod-urlcode.git \
-		&& cd libvmod-urlcode \
-		&& sh autogen.sh \
-		&& ./configure \
-		&& make \
-		&& make install \
-		&& make check
-RUN cd /tmp \
-        && git clone -b varnish51 https://github.com/xcir/libvmod-parseform.git \
-		&& cd libvmod-parseform \
-		&& sh autogen.sh \
-		&& ./configure \
-		&& make \
-		&& make install \
-		&& make check
-
-RUN cd /tmp \
-        && git clone -b 0.15.0  https://github.com/varnish/varnish-modules.git \
-		&& cd varnish-modules \
-		&& ./bootstrap \
-		&& ./configure \
-		&& make \
-		&& make check \
-		&& make install
-
 
 # BUILD-TIME ENVIRONMENT VARIABLES
 ENV FILE_DEFAULT_VCL "/etc/varnish/default.vcl"
