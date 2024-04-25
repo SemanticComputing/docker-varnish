@@ -26,7 +26,7 @@ sub vcl_recv {
 
     # Google Analytics cookies don't inhibit caching
     if (req.http.Cookie) {
-        set req.http.Cookie = regsuball(req.http.Cookie, "(^|; ) *__utm.=[^;]+;? *", "\1"); # Remove Google Analytics Cookies
+        set req.http.Cookie = regsuball(req.http.Cookie, "(^|; ) *(__utm.|_ga|_ga_[^=]+|_gat|_gid)=[^;]+;? *", "\1"); # Remove Google Analytics Cookies
         if (req.http.Cookie == "") {
             unset req.http.Cookie;
         }
