@@ -22,6 +22,7 @@ Below are listed environment variables (and their default values) for configurin
 FILE_DEFAULT_VCL="/etc/varnish/default.vcl" # Path to the varnish configuration
 VARNISH_MEM="1G" # Memory for varnish
 VARNISH_VSL_MASK_HASH="" # If nonempty, log hashes - run varnishd with -p vsl_mask=+Hash
+VARNISH_HTTP_PORT="80"
 ```
 
 ## Notes
