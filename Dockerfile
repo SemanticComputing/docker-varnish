@@ -5,8 +5,7 @@ RUN apt-get update && \
     apt-get install -y \
     varnish \
     varnish-modules \
-    gettext-base \
-    libcap2-bin
+    gettext-base
 
 # BUILD-TIME ENVIRONMENT VARIABLES
 ENV FILE_DEFAULT_VCL "/etc/varnish/default.vcl"
@@ -31,9 +30,6 @@ ENV VARNISH_HTTP_PORT "80"
 # Copy files
 COPY default.vcl "$FILE_DEFAULT_VCL"
 COPY generate-site-vcl.sh "$FILE_GENERATE_SITE_VCL_SH"
-
-# PERMISSIONS: PORTS
-RUN setcap CAP_NET_BIND_SERVICE=+eip /usr/sbin/varnishd
 
 # PERMISSIONS: FILES and FOLDERS
 RUN D="$PATH_VAR_VARNISH"  && mkdir -p "$D" && chgrp -R root "$D" && chmod g=u -R "$D"
