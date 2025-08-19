@@ -1,4 +1,4 @@
-FROM debian:11
+FROM debian:13-slim
 
 # INSTALL
 RUN apt-get update && \
